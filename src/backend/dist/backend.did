@@ -1,0 +1,267 @@
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Timestamp = int;
+type StatusAbsensi = 
+ variant {
+   alpa;
+   hadir;
+   izin;
+   sakit;
+ };
+type SimpanAbsensiInput = 
+ record {
+   daftar: vec AbsensiInput;
+   sesiId: SesiId;
+ };
+type SesiRingkas = 
+ record {
+   id: SesiId;
+   kelompokId: KelompokId;
+   mapelId: MapelId;
+   media: MediaSesi;
+   pemateri: text;
+   tanggal: Timestamp;
+ };
+type SesiInput = 
+ record {
+   jendelaMulai: Timestamp;
+   jendelaSelesai: Timestamp;
+   kelompokId: KelompokId;
+   mapelId: MapelId;
+   media: MediaSesi;
+   pemateri: text;
+   tanggal: Timestamp;
+   tempat: opt text;
+ };
+type SesiId = nat;
+type SesiFilter = 
+ record {
+   bulan: opt nat;
+   kelompokId: opt KelompokId;
+   mapelId: opt MapelId;
+   tahun: opt nat;
+ };
+type SesiDetail = 
+ record {
+   peserta: vec PesertaAbsensiView;
+   sesi: Sesi;
+ };
+type Sesi = 
+ record {
+   checkInToken: opt text;
+   id: SesiId;
+   jendelaMulai: Timestamp;
+   jendelaSelesai: Timestamp;
+   kelompokId: KelompokId;
+   mapelId: MapelId;
+   media: MediaSesi;
+   pemateri: text;
+   tanggal: Timestamp;
+   tempat: opt text;
+ };
+type RingkasanStatus = 
+ record {
+   alpa: nat;
+   hadir: nat;
+   izin: nat;
+   sakit: nat;
+   total: nat;
+ };
+type Result__1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type RekapPeserta = 
+ record {
+   diBawahAmbang: bool;
+   hadir: nat;
+   kelompokId: KelompokId;
+   nama: text;
+   persentase: float64;
+   pesertaId: PesertaId;
+   totalSesi: nat;
+ };
+type RekapKelompok = 
+ record {
+   kelompokId: KelompokId;
+   nama: text;
+   persentase: float64;
+   totalHadir: nat;
+   totalSesi: nat;
+ };
+type RekapFilter = 
+ record {
+   bulan: opt nat;
+   kelompokId: opt KelompokId;
+   tahun: opt nat;
+ };
+type RekapBulanan = 
+ record {
+   bulan: nat;
+   persentase: float64;
+   tahun: nat;
+   totalHadir: nat;
+   totalSesi: nat;
+ };
+type PesertaInput = 
+ record {
+   kelompokId: KelompokId;
+   nama: text;
+ };
+type PesertaId = nat;
+type PesertaFilter = 
+ record {
+   kelompokId: opt KelompokId;
+   nama: opt text;
+ };
+type PesertaAbsensiView = 
+ record {
+   catatan: text;
+   nama: text;
+   pesertaId: PesertaId;
+   status: StatusAbsensi;
+ };
+type Peserta = 
+ record {
+   id: PesertaId;
+   kelompokId: KelompokId;
+   nama: text;
+ };
+type MediaSesi = 
+ variant {
+   tatapMuka;
+   whatsapp;
+   zoom;
+ };
+type MataPelajaranInput = record {nama: text;};
+type MataPelajaran = 
+ record {
+   id: MapelId;
+   nama: text;
+ };
+type MapelId = nat;
+type KelompokId = text;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type DuplikatInput = 
+ record {
+   sesiId: SesiId;
+   tanggalTujuan: vec Timestamp;
+ };
+type DashboardRingkasan = 
+ record {
+   halaqahTerendah: opt RekapKelompok;
+   kehadiranBulanIni: float64;
+   sesiTerdekat: opt SesiRingkas;
+ };
+type CheckInInput = 
+ record {
+   pesertaId: PesertaId;
+   token: text;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type AmbangInput = record {persentase: float64;};
+type AbsensiInput = 
+ record {
+   catatan: text;
+   pesertaId: PesertaId;
+   status: StatusAbsensi;
+ };
+type Absensi = 
+ record {
+   catatan: text;
+   dicatatOleh: opt principal;
+   pesertaId: PesertaId;
+   sesiId: SesiId;
+   status: StatusAbsensi;
+   waktuCatat: Timestamp;
+ };
+service : {
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result__1);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  buatSesi: (input: SesiInput) -> (Sesi);
+  checkIn: (input: CheckInInput) -> (Absensi);
+  daftarkanAnggota: ("principal": principal, pesertaId: PesertaId) -> ();
+  daftarkanKetuaHalaqah: ("principal": principal, kelompokId: KelompokId) ->
+   ();
+  dashboard: () -> (DashboardRingkasan) query;
+  detailSesi: (id: SesiId) -> (opt SesiDetail) query;
+  duplikatSesi: (input: DuplikatInput) -> (vec Sesi);
+  eksporRekapExcel: (filter: RekapFilter) -> (blob) query;
+  eksporRekapPdf: (filter: RekapFilter) -> (blob) query;
+  execute: (qJson: text) -> (Result) query;
+  getAbsensiSesi: (sesiId: SesiId) -> (vec Absensi) query;
+  getAmbang: () -> (float64) query;
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getKelompokSaya: () -> (vec KelompokId) query;
+  getPeserta: (id: PesertaId) -> (opt Peserta) query;
+  getPesertaSaya: () -> (opt PesertaId) query;
+  getSesi: (id: SesiId) -> (opt Sesi) query;
+  hapusAnggota: ("principal": principal) -> ();
+  hapusKetuaHalaqah: ("principal": principal) -> ();
+  hapusMapel: (id: MapelId) -> (bool);
+  hapusPeserta: (id: PesertaId) -> (bool);
+  hapusSesi: (id: SesiId) -> (bool);
+  isCallerAdmin: () -> (bool) query;
+  listMapel: () -> (vec MataPelajaran) query;
+  listPeserta: (filter: PesertaFilter) -> (vec Peserta) query;
+  listSesi: (filter: SesiFilter) -> (vec Sesi) query;
+  rekapBulanan: (bulan: nat, tahun: nat) -> (RekapBulanan) query;
+  rekapPerKelompok: (filter: RekapFilter) -> (vec RekapKelompok) query;
+  rekapPerPeserta: (filter: RekapFilter) -> (vec RekapPeserta) query;
+  ringkasanSesi: (sesiId: SesiId) -> (RingkasanStatus) query;
+  schema: () -> (text) query;
+  setAmbang: (input: AmbangInput) -> (float64);
+  simpanAbsensi: (input: SimpanAbsensiInput) -> (RingkasanStatus);
+  tambahMapel: (input: MataPelajaranInput) -> (MataPelajaran);
+  tambahPeserta: (input: PesertaInput) -> (Peserta);
+  ubahMapel: (id: MapelId, input: MataPelajaranInput) -> (opt MataPelajaran);
+  ubahPeserta: (id: PesertaId, input: PesertaInput) -> (opt Peserta);
+  ubahSesi: (id: SesiId, input: SesiInput) -> (opt Sesi);
+}

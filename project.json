@@ -1,0 +1,22 @@
+{
+  "overview": "Modul absensi Belajar Bersama untuk mencatat kehadiran peserta per halaqah dan sesi, lengkap dengan rekap dan laporan.",
+  "features": [
+    "Kelola peserta, kelompok, dan mata pelajaran",
+    "Buat dan duplikat sesi pertemuan",
+    "Isi absensi satu kelompok sekaligus",
+    "Check-in mandiri peserta lewat link atau QR",
+    "Rekap kehadiran per peserta, halaqah, dan bulan",
+    "Ekspor rekap ke PDF dan Excel",
+    "Dashboard kehadiran bulan ini",
+    "Akses berbasis peran admin, ketua halaqah, dan anggota"
+  ],
+  "category": "productivity",
+  "tags": [
+    "absensi",
+    "kehadiran",
+    "pendidikan",
+    "halaqah",
+    "laporan"
+  ],
+  "last_updated": "2026-10-05T03:31:06.157Z"
+}
